@@ -5,7 +5,26 @@ module.exports = {
     "./public/index.html"
   ],
   theme: {
-    extend: {},
+    extend: {
+      width: {
+        '1100': '1100px'
+      },
+      backgroundColor: {
+        primary: '#F5F5F5',
+        secondary1: '#1266DD',
+        secondary2: '#F73859'
+      },
+      colors: {
+        'blue': '#F5F5F5',
+        'orange': '#FF9E73'
+      },
+      maxWidth: {
+        '600': '600px',
+      },
+      // cursor: {
+      //   pointer: 'pointer'
+      // }
+    },
   },
   plugins: [],
 }
