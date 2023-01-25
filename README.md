@@ -1,5 +1,5 @@
 # room-for-rent-full-stack
-Web-app room for rent written in SERN (MySQL - Express - ReactJs - NodeJs)
+Web-app room for rent written in MERN (MySQL - Express - ReactJs - NodeJs)
 
 # Cài đặt Tailwind css react
 npm install -D tailwindcss postcss autoprefixer
