@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
-import logo from '../../assets/logo.png'
 import { Button } from '../../components'
 import { path } from '../../utils/constant';
+import logo from '../../assets/logo.png'
 import icons from '../../utils/icons'
 
 const {
