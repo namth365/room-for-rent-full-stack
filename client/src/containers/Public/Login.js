@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { Button, InputForm } from '../../components'
-import { useLocation } from 'react-router-dom'
-import { apiRegister } from '../../services/auth'
+import { useLocation, useNavigate } from 'react-router-dom'
 import * as actions from '../../store/actions'
-import {useDispatch} from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 function Login() {
   const location = useLocation()
   const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const {isLoggedIn} = useSelector(state => state.auth)
   const [isRegister, setIsRegister] = useState(location.state?.flag)
+  const [invalidFields, setInvalidFields] = useState([])
+
   const [payload, setPayload] = useState({
     name: '',
     phone: '',
@@ -17,23 +20,70 @@ function Login() {
   useEffect(() => {
     setIsRegister(location.state?.flag)
   }, [location.state?.flag])
-  
+
+  useEffect(() => {
+    isLoggedIn && navigate('/')
+  }, [isLoggedIn])
   const handleSubmit = async () => {
-    dispatch(actions.register(payload))    
+    let finalPayload = isRegister ? payload : {
+      phone: payload.phone,
+      password: payload.password
+    }
+    let invalids = validate(finalPayload)
+    if (invalids === 0)
+      isRegister ? dispatch(actions.register(payload)) : dispatch(actions.login(payload));
   }
-  
-  
+
+  const validate = (payload) => {
+    let invalids = 0
+    let fields = Object.entries(payload)
+    fields.forEach(item => {
+      if (item[1] === '') {
+        setInvalidFields(prev => [...prev, {
+          name: item[0],
+          message: 'Không được bỏ trống trường này.'
+        }])
+        invalids++
+      }
+    })
+    fields.forEach(item => {
+      switch (item[0]) {
+        case 'password':
+          if (item[1].length < 6) {
+            setInvalidFields(prev => [...prev, {
+              name: item[0],
+              message: 'Mật khẩu tối thiểu 6 ký tự.'
+            }])
+            invalids++
+          }
+          break;
+        case 'phone':
+          if (!+item[1]) {
+            setInvalidFields(prev => [...prev, {
+              name: item[0],
+              message: 'Số điện thoại không đúng.'
+            }])
+            invalids++
+          }
+          break;
+        default:
+          break;
+      }
+    })
+    return invalids
+  }
+
   return (
     <div className='bg-white w-[600px] p-[30px] pb-[100px] rounded-md shadow-sm border border-[#DEDEDE]'>
       <h3 className='font-semibold text-2xl mb-3'>
         {isRegister ? 'Tạo tài khoản mới' : 'Đăng Nhập'}
       </h3>
       <div className='w-full flex flex-col gap-4'>
-        {isRegister && <InputForm label={'HỌ TÊN'} value={payload.name} setValue={setPayload} type={'name'} />}
-        <InputForm label={'SỐ ĐIỆN THOẠI'} value={payload.phone} setValue={setPayload} type={'phone'} />
-        <InputForm label={'MẬT KHẨU'} value={payload.password} setValue={setPayload} type={'password'} />
+        {isRegister && <InputForm setInvalidFields={setInvalidFields} invalidFields={invalidFields} label={'HỌ TÊN'} value={payload.name} setValue={setPayload} type={'name'} />}
+        <InputForm setInvalidFields={setInvalidFields} invalidFields={invalidFields} label={'SỐ ĐIỆN THOẠI'} value={payload.phone} setValue={setPayload} type={'phone'} />
+        <InputForm setInvalidFields={setInvalidFields} invalidFields={invalidFields} label={'MẬT KHẨU'} value={payload.password} setValue={setPayload} type={'password'} />
         <Button
-          text= {isRegister ? 'Dang ki' : 'Đăng nhập' } 
+          text={isRegister ? 'Đăng ký' : 'Đăng nhập'}
           bgColor='bg-secondary1'
           textColor='text-white'
           fullWidth
@@ -42,11 +92,25 @@ function Login() {
       </div>
       <div className='mt-7 flex items-center justify-between'>
         {isRegister ? <small> Bạn đã có tài khoản?
-          <span onClick={() => { setIsRegister(false) }}
+          <span onClick={() => {
+            setIsRegister(false)
+            setPayload({
+              name: '',
+              phone: '',
+              password: ''
+            })
+          }}
             className='text-[blue] hover:text-orange cursor-pointer '> Đăng nhập ngay </span>
         </small> : <>
           <small className='text-[blue] hover:text-orange cursor-pointer '>Bạn quên mật khẩu ?</small>
-          <small onClick={() => { setIsRegister(true) }} className='text-[blue] hover:text-orange cursor-pointer '>
+          <small onClick={() => {
+            setIsRegister(true)
+            setPayload({
+              name: '',
+              phone: '',
+              password: ''
+            })
+          }} className='text-[blue] hover:text-orange cursor-pointer '>
             Tạo tài khoản mới</small>
         </>}
       </div>
