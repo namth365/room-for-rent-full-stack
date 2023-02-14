@@ -21,7 +21,7 @@ export const registerService = ({name, phone, password}) => new Promise(async(re
         const token = response[1] && jwt.sign({id: response[0].id, phone: response[0].phone }, process.env.SECRET_KEY, {expiresIn: '2d'})
         resolve( {
             err: token ? 0 : 2,
-            msg: token ? 'Register is successfully' : 'Phone number already exists',
+            msg: token ? 'Đăng ký thành công' : 'Số điện thoại này đã được đăng ký',
             token: token || null
         })
     } catch (error) {
@@ -40,7 +40,7 @@ export const loginService = ({phone, password}) => new Promise(async(resolve, re
         const token = isCorrectPassword && jwt.sign({id: response.id, phone: response.phone }, process.env.SECRET_KEY, {expiresIn: '2d'})
         resolve( {
             err: token ? 0 : 2,
-            msg: token ? 'Login is successfully' : response ? 'Password is wrong' : 'Phone number not found',
+            msg: token ? 'Đăng Nhập Thành Công' : response ? 'Mật Khẩu Không Đúng' : 'Số Điện Thoại Không Tồn Tại',
             token: token || null
         })
     } catch (error) {
